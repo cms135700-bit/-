@@ -1,0 +1,53 @@
+# This repository is prepared for the Telegram bot ingest automation only.
+# Everything is ignored by default so the local stock vault is not uploaded by accident.
+*
+
+# Root automation files
+!.gitignore
+!README.github-telegram.md
+!.github/
+!.github/workflows/
+!.github/workflows/telegram-bot-ingest.yml
+
+# Python automation code
+!knowledge_pipeline/
+!knowledge_pipeline/*.py
+!knowledge_pipeline/README.md
+!telegram/
+!telegram/README.md
+!telegram/.env.example
+!telegram/.gitignore
+!telegram/prompts/
+!telegram/prompts/*.md
+!telegram/scripts/
+!telegram/scripts/*.py
+
+# Runtime state and text/json outputs that let GitHub Actions continue incrementally.
+!telegram/state/
+!telegram/state/*.json
+!telegram/state/*.jsonl
+!telegram/state/*.md
+!telegram/bot/
+!telegram/bot/**/
+!telegram/bot/**/*.md
+!telegram/ra/
+!telegram/ra/**/
+!telegram/ra/**/*.md
+!telegram/manifests/
+!telegram/manifests/**/
+!telegram/manifests/**/*.jsonl
+!telegram/raw_updates/
+!telegram/raw_updates/**/
+!telegram/raw_updates/**/*.jsonl
+
+# Secrets, caches, local-only binaries, and bulky downloaded media.
+.DS_Store
+__pycache__/
+*.py[cod]
+telegram/.env
+telegram/**/__pycache__/
+telegram/**/*_assets/
+telegram/raw/
+telegram/리포트 저장소/
+telegram/explain/
+telegram/normalized/

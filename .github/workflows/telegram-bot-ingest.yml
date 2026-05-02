@@ -1,0 +1,65 @@
+name: Telegram Bot Ingest
+
+on:
+  schedule:
+    - cron: "0 */4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: telegram-bot-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check 20 hour run gate
+        id: gate
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          set +e
+          python3 telegram/scripts/should_run_telegram_ingest.py --interval-hours 20
+          status=$?
+          if [ "$status" = "78" ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$status" != "0" ]; then
+            exit "$status"
+          fi
+          echo "should_run=true" >> "$GITHUB_OUTPUT"
+
+      - name: Run Telegram bot ingest
+        if: steps.gate.outputs.should_run == 'true'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        run: python3 telegram/scripts/telegram_bot_ingest.py
+
+      - name: Commit ingest outputs
+        if: steps.gate.outputs.should_run == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No ingest changes to commit."
+            exit 0
+          fi
+          git commit -m "Update Telegram bot ingest"
+          git push
