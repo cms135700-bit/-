@@ -1,8 +1,8 @@
 {
-  "offset": 800801534,
+  "offset": 800801552,
   "last_message_id_by_chat": {
-    "6746975543": 1102
+    "6746975543": 1120
   },
-  "last_successful_poll_at": "2026-05-27T16:54:52.100337+09:00",
+  "last_successful_poll_at": "2026-05-28T16:45:49.374418+09:00",
   "last_polled_update_count": 0
 }
